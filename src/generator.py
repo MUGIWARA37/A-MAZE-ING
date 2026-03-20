@@ -20,3 +20,5 @@ class MazeGenerator:
             [0xF for _ in range(self.width)]
             for _ in range(self.height)
         ]
+        
+    def generate():
