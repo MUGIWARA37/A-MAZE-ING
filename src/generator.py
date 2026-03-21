@@ -148,31 +148,31 @@ class MazeGenerator:
         Keeps entry and exit border walls open so the player
         can enter and exit the maze.
         """
-    for x in range(self.width):
-        # top row — close North wall
-        self.grid[0][x] |= 0x1
-        # bottom row — close South wall
-        self.grid[self.height - 1][x] |= 0x4
-
-    for y in range(self.height):
-        # left column — close West wall
-        self.grid[y][0] |= 0x8
-        # right column — close East wall
-        self.grid[y][self.width - 1] |= 0x2
-
-    # reopen entry and exit border walls
-    self._open_border_wall(self.entry)
-    self._open_border_wall(self.exit)
+        for x in range(self.width):
+            # top row — close North wall
+            self.grid[0][x] |= 0x1
+            # bottom row — close South wall
+            self.grid[self.height - 1][x] |= 0x4
+    
+        for y in range(self.height):
+            # left column — close West wall
+            self.grid[y][0] |= 0x8
+            # right column — close East wall
+            self.grid[y][self.width - 1] |= 0x2
+    
+        # reopen entry and exit border walls
+        self._open_border_wall(self.entry)
+        self._open_border_wall(self.exit)
 
 
     def _open_border_wall(self, cell: tuple[int, int]) -> None:
         """Open the outer wall of a border cell (entry or exit).
-    
+
         Args:
             cell: The (x, y) coordinates of the border cell.
         """
         x, y = cell
-    
+
         if y == 0:
             self.grid[y][x] &= ~0x1   # open North wall
         elif y == self.height - 1:
