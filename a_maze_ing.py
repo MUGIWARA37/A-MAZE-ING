@@ -1,7 +1,7 @@
 import sys
 from src.config_parser import parse_config
 from src.generator import MazeGenerator
-from src.pathfinder import find_shortest_path, DIRECTIONS
+from src.pathfinder import find_shortest_path
 from src.writer import write_maze
 from src.display import run_display
 

@@ -36,6 +36,7 @@ def render_maze(
     path: list[tuple[int, int]],
     show_path: bool,
     color_name: str,
+    pattern_cells: set[tuple[int, int]],
     offset_y: int = 1,
     offset_x: int = 2,
 ) -> None:
@@ -49,6 +50,7 @@ def render_maze(
         path: List of (x, y) coordinates on the shortest path.
         show_path: Whether to display the path.
         color_name: Name of the wall color.
+        pattern_cells: Set of (x, y) coordinates of the 42 pattern.
         offset_y: Vertical offset from top of screen.
         offset_x: Horizontal offset from left of screen.
     """
@@ -57,6 +59,12 @@ def render_maze(
     path_set = set(path)
     is_rgb = color_name == "rgb"
 
+    max_y, max_x = stdscr.getmaxyx()
+    if 2 * height + 10 > max_y or 4 * width + 10 > max_x:
+        stdscr.addstr(0, 0, "Terminal too small! Resize and press any key.")
+        stdscr.getch()
+        return
+
     for row in range(2 * height + 1):
         for col in range(2 * width + 1):
             cy = row // 2
@@ -64,24 +72,33 @@ def render_maze(
             screen_y = offset_y + row
             screen_x = offset_x + (col * 2)
 
+            if screen_y >= max_y or screen_x >= max_x:
+                continue
+
             try:
                 if row % 2 == 0 and col % 2 == 0:
                     wall_attr = _get_wall_color(is_rgb, color_name)
                     stdscr.addstr(screen_y, screen_x, "+", wall_attr)
 
                 elif row % 2 == 0 and col % 2 == 1:
-                    has_wall = cy > 0 and (grid[cy - 1][cx] & 0x4)
+                    if row == 0 or row == 2 * height:
+                        has_wall = True
+                    else:
+                        has_wall = bool(grid[cy - 1][cx] & 0x4)
                     if has_wall:
                         wall_attr = _get_wall_color(is_rgb, color_name)
-                        stdscr.addstr(screen_y, screen_x, "──", wall_attr)
+                        stdscr.addstr(screen_y, screen_x, "--", wall_attr)
                     else:
                         stdscr.addstr(screen_y, screen_x, "  ")
 
                 elif row % 2 == 1 and col % 2 == 0:
-                    has_wall = cx > 0 and (grid[cy][cx - 1] & 0x2)
+                    if col == 0 or col == 2 * width:
+                        has_wall = True
+                    else:
+                        has_wall = bool(grid[cy][cx - 1] & 0x2)
                     if has_wall:
                         wall_attr = _get_wall_color(is_rgb, color_name)
-                        stdscr.addstr(screen_y, screen_x, "│", wall_attr)
+                        stdscr.addstr(screen_y, screen_x, "|", wall_attr)
                     else:
                         stdscr.addstr(screen_y, screen_x, " ")
 
@@ -89,7 +106,8 @@ def render_maze(
                     _render_cell(
                         stdscr, screen_y, screen_x,
                         cx, cy, entry, exit,
-                        path_set, show_path
+                        path_set, show_path,
+                        pattern_cells
                     )
 
             except curses.error:
@@ -134,20 +152,8 @@ def _render_cell(
     exit: tuple[int, int],
     path_set: set[tuple[int, int]],
     show_path: bool,
+    pattern_cells: set[tuple[int, int]],  # add this
 ) -> None:
-    """Render the interior of a single maze cell.
-
-    Args:
-        stdscr: The curses window to draw on.
-        screen_y: Screen row to draw at.
-        screen_x: Screen column to draw at.
-        cx: Cell x coordinate.
-        cy: Cell y coordinate.
-        entry: Entry coordinates (x, y).
-        exit: Exit coordinates (x, y).
-        path_set: Set of (x, y) path coordinates.
-        show_path: Whether to display the path.
-    """
     if (cx, cy) == entry:
         stdscr.addstr(
             screen_y, screen_x, "S",
@@ -158,9 +164,14 @@ def _render_cell(
             screen_y, screen_x, "E",
             curses.color_pair(4) | curses.A_BOLD
         )
+    elif (cx, cy) in pattern_cells:
+        stdscr.addstr(
+            screen_y, screen_x, "#",
+            curses.color_pair(6) | curses.A_BOLD  # magenta
+        )
     elif show_path and (cx, cy) in path_set:
         stdscr.addstr(
-            screen_y, screen_x, "·",
+            screen_y, screen_x, "*",
             curses.color_pair(5) | curses.A_BOLD
         )
     else:
