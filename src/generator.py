@@ -32,6 +32,7 @@ class MazeGenerator:
             [0xF for _ in range(self.width)]
             for _ in range(self.height)
         ]
+        self._pattern_cells: set[tuple[int, int]] = set()
 
     def generate(self) -> list[list[int]]:
         """Generate the maze and return the grid.
@@ -42,8 +43,8 @@ class MazeGenerator:
         random.seed(self.seed)
         random.seed(self.seed)
         self._carve_dfs()
-        self._enforce_borders()  # add this
         self._place_42()
+        self._enforce_borders()
         return self.grid
 
     def _carve_dfs(self) -> None:
@@ -113,8 +114,8 @@ class MazeGenerator:
 
         PATTERN_42 = [
             "X  X XXXX",
-            "X  X X   ",
-            "XXXX XXX ",
+            "X  X    X",
+            "XXXX XXXX",
             "   X X   ",
             "   X XXXX",
         ]
@@ -128,6 +129,8 @@ class MazeGenerator:
                     py = start_y + row_idx
                     pattern_cells.add((px, py))
 
+        self._pattern_cells = pattern_cells
+
         # stamp 0xF on all pattern cells
         for px, py in pattern_cells:
             self.grid[py][px] = 0xF
@@ -138,13 +141,14 @@ class MazeGenerator:
                 nx, ny = px + dx, py + dy
                 if (0 <= nx < self.width and
                         0 <= ny < self.height and
-                        (nx, ny) not in pattern_cells):
+                        (nx, ny) not in pattern_cells and
+                        (nx, ny) != self.entry and    # ← add this
+                        (nx, ny) != self.exit):       # ← add this
                     self.grid[ny][nx] |= neighbour_wall
-    
-    
+
     def _enforce_borders(self) -> None:
         """Ensure all border cells have their outer walls closed.
-    
+
         Keeps entry and exit border walls open so the player
         can enter and exit the maze.
         """
@@ -181,3 +185,11 @@ class MazeGenerator:
             self.grid[y][x] &= ~0x8   # open West wall
         elif x == self.width - 1:
             self.grid[y][x] &= ~0x2   # open East wall
+    
+    def get_pattern_cells(self) -> set[tuple[int, int]]:
+        """Return the set of cells used by the 42 pattern.
+
+        Returns:
+            Set of (x, y) coordinates of pattern cells.
+        """
+        return self._pattern_cells

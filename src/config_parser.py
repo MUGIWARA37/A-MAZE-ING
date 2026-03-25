@@ -52,6 +52,8 @@ def parse_config(filepath: str) -> MazeConfig:
 
         if "seed" in config_dict:
             config_dict["seed"] = int(config_dict["seed"])
+        else:
+            config_dict["seed"] = None
 
         return MazeConfig(**config_dict)
 
