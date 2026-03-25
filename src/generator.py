@@ -41,7 +41,6 @@ class MazeGenerator:
             2D list of ints representing the maze wall bitmasks.
         """
         random.seed(self.seed)
-        random.seed(self.seed)
         self._carve_dfs()
         self._place_42()
         self._enforce_borders()
