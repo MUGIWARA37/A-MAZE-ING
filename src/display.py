@@ -15,6 +15,7 @@ COLOR_MAP = {
     "cyan":   5,
 }
 
+
 def setup_colors() -> None:
     """Initialize curses color pairs."""
     curses.start_color()
@@ -164,3 +165,152 @@ def _render_cell(
         )
     else:
         stdscr.addstr(screen_y, screen_x, " ")
+
+
+def show_menu(
+    stdscr: curses.window,
+    height: int,
+    color_name: str,
+    show_path: bool,
+) -> None:
+    """Render the interaction menu below the maze.
+
+    Args:
+        stdscr: The curses window to draw on.
+        height: Maze height in cells.
+        color_name: Current wall color name.
+        show_path: Whether the path is currently shown.
+    """
+    menu_y = (2 * height + 1) + 3
+
+    stdscr.addstr(
+        menu_y, 2,
+        "═══ A-Maze-ing ═══",
+        curses.color_pair(5) | curses.A_BOLD
+    )
+    stdscr.addstr(
+        menu_y + 1, 2,
+        "[r]",
+        curses.color_pair(3) | curses.A_BOLD
+    )
+    stdscr.addstr(
+        menu_y + 1, 6,
+        "regenerate maze"
+    )
+    stdscr.addstr(
+        menu_y + 2, 2,
+        "[p]",
+        curses.color_pair(3) | curses.A_BOLD
+    )
+    stdscr.addstr(
+        menu_y + 2, 6,
+        f"show/hide path  (currently: {'shown' if show_path else 'hidden'})"
+    )
+    stdscr.addstr(
+        menu_y + 3, 2,
+        "[c]",
+        curses.color_pair(3) | curses.A_BOLD
+    )
+    stdscr.addstr(
+        menu_y + 3, 6,
+        f"cycle wall color (currently: {color_name})"
+    )
+    stdscr.addstr(
+        menu_y + 4, 2,
+        "[q]",
+        curses.color_pair(4) | curses.A_BOLD
+    )
+    stdscr.addstr(
+        menu_y + 4, 6,
+        "quit"
+    )
+
+
+def run_display(config: MazeConfig) -> None:
+    """Main display loop — renders maze and handles user input.
+
+    Args:
+        config: A validated MazeConfig instance.
+    """
+    def _main(stdscr: curses.window) -> None:
+        setup_colors()
+        curses.curs_set(0)
+
+        color_index: int = 0
+        show_path: bool = False
+
+        generator = MazeGenerator(config)
+        grid = generator.generate()
+        path_coords = _build_path_coords(
+            grid, config.entry, config.exit
+        )
+
+        while True:
+            stdscr.clear()
+            color_name = WALL_COLORS[color_index]
+
+            render_maze(
+                stdscr, grid,
+                config.entry, config.exit,
+                path_coords, show_path, color_name
+            )
+            show_menu(
+                stdscr, config.height,
+                color_name, show_path
+            )
+            stdscr.refresh()
+
+            key = stdscr.getch()
+
+            if key == ord('q'):
+                break
+
+            elif key == ord('r'):
+                generator = MazeGenerator(config)
+                grid = generator.generate()
+                path_coords = _build_path_coords(
+                    grid, config.entry, config.exit
+                )
+
+            elif key == ord('p'):
+                show_path = not show_path
+
+            elif key == ord('c'):
+                color_index = (color_index + 1) % len(WALL_COLORS)
+
+    curses.wrapper(_main)
+
+
+def _build_path_coords(
+    grid: list[list[int]],
+    entry: tuple[int, int],
+    exit: tuple[int, int],
+) -> list[tuple[int, int]]:
+    """Convert path directions to a list of (x, y) coordinates.
+
+    Args:
+        grid: 2D list of wall bitmasks.
+        entry: Entry coordinates (x, y).
+        exit: Exit coordinates (x, y).
+
+    Returns:
+        List of (x, y) coordinates along the shortest path.
+    """
+    from src.pathfinder import find_shortest_path, DIRECTIONS
+
+    try:
+        directions = find_shortest_path(grid, entry, exit)
+    except ValueError:
+        return []
+
+    coords: list[tuple[int, int]] = [entry]
+    x, y = entry
+
+    for direction in directions:
+        dx, dy, _, _ = DIRECTIONS[direction]
+        x, y = x + dx, y + dy
+        coords.append((x, y))
+
+    return coords
+
+

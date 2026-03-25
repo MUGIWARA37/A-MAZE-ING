@@ -34,7 +34,9 @@ def find_shortest_path(
     queue.append(entry)
 
     visited: set[tuple[int, int]] = {entry}
-    came_from: dict[tuple[int, int], tuple[tuple[int, int], str] | None] = {entry: None}
+    came_from: dict[
+        tuple[int, int],tuple[tuple[int, int], str] | None
+        ] = {entry: None}
 
     while queue:
         x, y = queue.popleft()
