@@ -41,19 +41,19 @@ class MazeGenerator:
             2D list of ints representing the maze wall bitmasks.
         """
         random.seed(self.seed)
-        self._carve_dfs()
-        self._place_42()
-        self._enforce_borders()
+        self._place_42()        # place 42 FIRST
+        self._carve_dfs()       # DFS avoids 42 cells
+        self._enforce_borders() # enforce borders last
         return self.grid
 
     def _carve_dfs(self) -> None:
         """Carve passages through the grid using iterative DFS.
 
-        Visits every cell exactly once, opening walls between
-        cells to create a perfect maze.
+        Pre-marks 42 pattern cells as visited so DFS routes around them.
         """
         stack: list[tuple[int, int]] = [self.entry]
-        visited: set[tuple[int, int]] = {self.entry}
+        # pre-mark 42 cells as visited so DFS never carves through them
+        visited: set[tuple[int, int]] = {self.entry} | self._pattern_cells
 
         while stack:
             x, y = stack[-1]
@@ -97,10 +97,7 @@ class MazeGenerator:
         self.grid[ny][nx] &= ~neighbour_wall
 
     def _place_42(self) -> None:
-        """Stamp the '42' pattern onto the maze using fully closed cells.
-
-        Prints an error message if the maze is too small to fit the pattern.
-        """
+        """Stamp the '42' pattern onto the maze before DFS carving."""
         pattern_width = 9
         pattern_height = 5
 
@@ -119,7 +116,6 @@ class MazeGenerator:
             "   X XXXX",
         ]
 
-        # collect all "42" cells first
         pattern_cells: set[tuple[int, int]] = set()
         for row_idx, row in enumerate(PATTERN_42):
             for col_idx, char in enumerate(row):
@@ -134,20 +130,8 @@ class MazeGenerator:
         for px, py in pattern_cells:
             self.grid[py][px] = 0xF
 
-        # close walls of neighbours pointing into pattern cells
-        for px, py in pattern_cells:
-            for direction, (dx, dy, current_wall, neighbour_wall) in DIRECTIONS.items():
-                nx, ny = px + dx, py + dy
-                if (0 <= nx < self.width and
-                        0 <= ny < self.height and
-                        (nx, ny) not in pattern_cells and
-                        (nx, ny) != self.entry and    # ← add this
-                        (nx, ny) != self.exit):       # ← add this
-                    self.grid[ny][nx] |= neighbour_wall
-
     def _enforce_borders(self) -> None:
         """Ensure all border cells have their outer walls closed.
-
         Keeps entry and exit border walls open so the player
         can enter and exit the maze.
         """
@@ -156,13 +140,11 @@ class MazeGenerator:
             self.grid[0][x] |= 0x1
             # bottom row — close South wall
             self.grid[self.height - 1][x] |= 0x4
-    
         for y in range(self.height):
             # left column — close West wall
             self.grid[y][0] |= 0x8
             # right column — close East wall
             self.grid[y][self.width - 1] |= 0x2
-    
         # reopen entry and exit border walls
         self._open_border_wall(self.entry)
         self._open_border_wall(self.exit)

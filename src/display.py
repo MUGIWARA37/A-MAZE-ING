@@ -84,22 +84,22 @@ def _render_cell(
     try:
         if (cx, cy) == entry:
             stdscr.addstr(
-                screen_y, screen_x, "S",
+                screen_y, screen_x, "🍆",
                 curses.color_pair(4) | curses.A_BOLD
             )
         elif (cx, cy) == exit:
             stdscr.addstr(
-                screen_y, screen_x, "E",
+                screen_y, screen_x, "🍑",
                 curses.color_pair(4) | curses.A_BOLD
             )
         elif (cx, cy) in pattern_cells:
             stdscr.addstr(
-                screen_y, screen_x, "#",
+                screen_y, screen_x, "🟥",
                 curses.color_pair(6) | curses.A_BOLD
             )
         elif show_path and (cx, cy) in path_set:
             stdscr.addstr(
-                screen_y, screen_x, "*",
+                screen_y, screen_x, "👾",
                 curses.color_pair(5) | curses.A_BOLD
             )
         else:
@@ -165,7 +165,7 @@ def render_maze(
             try:
                 if row % 2 == 0 and col % 2 == 0:
                     wall_attr = _get_wall_color(is_rgb, color_name)
-                    stdscr.addstr(screen_y, screen_x, "+", wall_attr)
+                    stdscr.addstr(screen_y, screen_x, "✢", wall_attr)
 
                 elif row % 2 == 0 and col % 2 == 1:
                     if row == 0 or row == 2 * height:
@@ -174,7 +174,7 @@ def render_maze(
                         has_wall = bool(grid[cy - 1][cx] & 0x4)
                     if has_wall:
                         wall_attr = _get_wall_color(is_rgb, color_name)
-                        stdscr.addstr(screen_y, screen_x, "---", wall_attr)
+                        stdscr.addstr(screen_y, screen_x, "— ", wall_attr)
                     else:
                         stdscr.addstr(screen_y, screen_x, "  ")
 

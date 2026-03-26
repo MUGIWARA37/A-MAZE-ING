@@ -45,5 +45,5 @@ def write_maze(
             # shortest path
             f.write("".join(path) + "\n")
 
-    except IOError as e:
-        raise IOError(f"Could not write to file '{output_file}': {e}")
+    except OSError as e:
+        raise OSError(f"Could not write to file '{output_file}': {e}")
