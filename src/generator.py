@@ -43,7 +43,7 @@ class MazeGenerator:
         random.seed(self.seed)
         self._place_42()        # place 42 FIRST
         self._carve_dfs()       # DFS avoids 42 cells
-        self._enforce_borders() # enforce borders last
+        self._enforce_borders()  # enforce borders last
         return self.grid
 
     def _carve_dfs(self) -> None:
@@ -64,10 +64,12 @@ class MazeGenerator:
                 if (0 <= nx < self.width and
                         0 <= ny < self.height and
                         (nx, ny) not in visited):
-                    neighbours.append((nx, ny, direction, current_wall, neighbour_wall))
+                    neighbours.append(
+                        (nx, ny, direction, current_wall, neighbour_wall))
 
             if neighbours:
-                nx, ny, direction, current_wall, neighbour_wall = random.choice(neighbours)
+                nx, ny, direction, current_wall, neighbour_wall = random.choice(
+                    neighbours)
                 self._carve_passage(x, y, nx, ny, current_wall, neighbour_wall)
                 visited.add((nx, ny))
                 stack.append((nx, ny))
@@ -149,7 +151,6 @@ class MazeGenerator:
         self._open_border_wall(self.entry)
         self._open_border_wall(self.exit)
 
-
     def _open_border_wall(self, cell: tuple[int, int]) -> None:
         """Open the outer wall of a border cell (entry or exit).
 
@@ -166,7 +167,7 @@ class MazeGenerator:
             self.grid[y][x] &= ~0x8   # open West wall
         elif x == self.width - 1:
             self.grid[y][x] &= ~0x2   # open East wall
-    
+
     def get_pattern_cells(self) -> set[tuple[int, int]]:
         """Return the set of cells used by the 42 pattern.
 
