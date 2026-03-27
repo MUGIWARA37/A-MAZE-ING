@@ -25,6 +25,10 @@ clean:
 	find . -type f -name "*.pyc" -delete
 	find . -type f -name "*.pyo" -delete
 
+fclean: clean
+	rm -rf *.whl
+
+
 lint:
 	flake8 .
 	mypy . \
