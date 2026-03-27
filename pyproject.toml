@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "mazegen"
+version = "1.0.0"
+description = "A maze generator using iterative DFS with a '42' pattern"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = ["maze", "generator", "DFS", "algorithm"]
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/yourusername/a-maze-ing"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mazegen*"]
