@@ -44,7 +44,8 @@ def find_shortest_path(
         if (x, y) == exit:
             return reconstruct_path(came_from, entry, exit)
 
-        for direction, (dx, dy, current_wall, neighbour_wall) in DIRECTIONS.items():
+        for direction, value in DIRECTIONS.items():
+            dx, dy, current_wall, neighbour_wall = value
             nx, ny = x + dx, y + dy
 
             if not (0 <= nx < width and 0 <= ny < height):

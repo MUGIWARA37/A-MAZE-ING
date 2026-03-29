@@ -59,7 +59,8 @@ class MazeGenerator:
             x, y = stack[-1]
 
             neighbours: list[tuple[int, int, str, int, int]] = []
-            for direction, (dx, dy, current_wall, neighbour_wall) in DIRECTIONS.items():
+            for direction, value in DIRECTIONS.items():
+                dx, dy, current_wall, neighbour_wall = value
                 nx, ny = x + dx, y + dy
                 if (0 <= nx < self.width and
                         0 <= ny < self.height and
@@ -68,8 +69,8 @@ class MazeGenerator:
                         (nx, ny, direction, current_wall, neighbour_wall))
 
             if neighbours:
-                nx, ny, direction, current_wall, neighbour_wall = random.choice(
-                    neighbours)
+                choice = random.choice(neighbours)
+                nx, ny, direction, current_wall, neighbour_wall = choice
                 self._carve_passage(x, y, nx, ny, current_wall, neighbour_wall)
                 visited.add((nx, ny))
                 stack.append((nx, ny))

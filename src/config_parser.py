@@ -36,7 +36,8 @@ def parse_config(filepath: str) -> MazeConfig:
                     continue
                 if "=" not in line:
                     raise ValueError(
-                        f"Invalid line '{line}' — must follow the format 'KEY=VALUE'"
+                        f"Invalid line '{line}' — must "
+                        "follow the format 'KEY=VALUE'"
                     )
                 key, value = line.split("=", 1)
                 config_dict[key.strip().lower()] = value.strip()

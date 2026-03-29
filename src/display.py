@@ -239,7 +239,8 @@ def show_menu(
         )
         stdscr.addstr(
             menu_y + 2, 6,
-            f" show/hide path  (currently: {'shown' if show_path else 'hidden'})"
+            " show/hide path  (currently: "
+            f"{'shown' if show_path else 'hidden'})"
         )
 
         stdscr.addstr(
