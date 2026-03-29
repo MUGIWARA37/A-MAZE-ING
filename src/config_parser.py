@@ -25,6 +25,9 @@ class MazeConfig(BaseModel):
                 )
         if self.entry == self.exit:
             raise ValueError("entry and exit must be different cells")
+        if not self.output_file.endswith(".txt"):
+            raise ValueError("The out_put file must "
+                             "be a txt file (example.txt) !")
         return self
 
 
