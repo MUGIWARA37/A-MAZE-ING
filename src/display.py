@@ -9,11 +9,11 @@ from src.pathfinder import find_shortest_path, DIRECTIONS
 WALL_COLORS = ["white", "green", "yellow", "red", "cyan", "rgb"]
 
 COLOR_MAP = {
-    "white":  1,
-    "green":  2,
+    "white": 1,
+    "green": 2,
     "yellow": 3,
-    "red":    4,
-    "cyan":   5,
+    "red": 4,
+    "cyan": 5,
 }
 
 
@@ -21,11 +21,11 @@ def setup_colors() -> None:
     """Initialize curses color pairs."""
     curses.start_color()
     curses.use_default_colors()
-    curses.init_pair(1, curses.COLOR_WHITE,   -1)
-    curses.init_pair(2, curses.COLOR_GREEN,   -1)
-    curses.init_pair(3, curses.COLOR_YELLOW,  -1)
-    curses.init_pair(4, curses.COLOR_RED,     -1)
-    curses.init_pair(5, curses.COLOR_CYAN,    -1)
+    curses.init_pair(1, curses.COLOR_WHITE, -1)
+    curses.init_pair(2, curses.COLOR_GREEN, -1)
+    curses.init_pair(3, curses.COLOR_YELLOW, -1)
+    curses.init_pair(4, curses.COLOR_RED, -1)
+    curses.init_pair(5, curses.COLOR_CYAN, -1)
     curses.init_pair(6, curses.COLOR_MAGENTA, -1)
 
 
@@ -43,12 +43,7 @@ def _get_wall_color(is_rgb: bool, color_name: str) -> int:
         if curses.can_change_color():
             hue = (time.time() * 0.1) % 1.0
             r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
-            curses.init_color(
-                10,
-                int(r * 1000),
-                int(g * 1000),
-                int(b * 1000)
-            )
+            curses.init_color(10, int(r * 1000), int(g * 1000), int(b * 1000))
             curses.init_pair(7, 10, -1)
             return curses.color_pair(7)
         return curses.color_pair(COLOR_MAP["cyan"])
@@ -84,23 +79,19 @@ def _render_cell(
     try:
         if (cx, cy) == entry:
             stdscr.addstr(
-                screen_y, screen_x, "🍆",
-                curses.color_pair(4) | curses.A_BOLD
+                screen_y, screen_x, "⚉", curses.color_pair(4) | curses.A_BOLD
             )
         elif (cx, cy) == exit:
             stdscr.addstr(
-                screen_y, screen_x, "🍑",
-                curses.color_pair(4) | curses.A_BOLD
+                screen_y, screen_x, "👾", curses.color_pair(4) | curses.A_BOLD
             )
         elif (cx, cy) in pattern_cells:
             stdscr.addstr(
-                screen_y, screen_x, "🟥",
-                curses.color_pair(6) | curses.A_BOLD
+                screen_y, screen_x, "🟥", curses.color_pair(6) | curses.A_BOLD
             )
         elif show_path and (cx, cy) in path_set:
             stdscr.addstr(
-                screen_y, screen_x, "👾",
-                curses.color_pair(5) | curses.A_BOLD
+                screen_y, screen_x, "◽", curses.color_pair(5) | curses.A_BOLD
             )
         else:
             stdscr.addstr(screen_y, screen_x, " ")
@@ -144,8 +135,7 @@ def render_maze(
     if 2 * height + 10 > max_y or 4 * width + 10 > max_x:
         try:
             stdscr.addstr(
-                0, 0,
-                "Terminal too small! Resize and press any key."
+                0, 0, "Terminal too small! Resize and press any key."
             )
             stdscr.getch()
         except curses.error:
@@ -191,10 +181,16 @@ def render_maze(
 
                 else:
                     _render_cell(
-                        stdscr, screen_y, screen_x,
-                        cx, cy, entry, exit,
-                        path_set, show_path,
-                        pattern_cells
+                        stdscr,
+                        screen_y,
+                        screen_x,
+                        cx,
+                        cy,
+                        entry,
+                        exit,
+                        path_set,
+                        show_path,
+                        pattern_cells,
                     )
 
             except curses.error:
@@ -221,42 +217,35 @@ def show_menu(
 
     try:
         stdscr.addstr(
-            menu_y, 2,
+            menu_y,
+            2,
             "=== A-Maze-ing ===",
-            curses.color_pair(5) | curses.A_BOLD
+            curses.color_pair(5) | curses.A_BOLD,
         )
         stdscr.addstr(
-            menu_y + 1, 2,
-            "[r]",
-            curses.color_pair(3) | curses.A_BOLD
+            menu_y + 1, 2, "[r]", curses.color_pair(3) | curses.A_BOLD
         )
         stdscr.addstr(menu_y + 1, 6, " regenerate maze")
 
         stdscr.addstr(
-            menu_y + 2, 2,
-            "[p]",
-            curses.color_pair(3) | curses.A_BOLD
+            menu_y + 2, 2, "[p]", curses.color_pair(3) | curses.A_BOLD
         )
         stdscr.addstr(
-            menu_y + 2, 6,
+            menu_y + 2,
+            6,
             " show/hide path  (currently: "
-            f"{'shown' if show_path else 'hidden'})"
+            f"{'shown' if show_path else 'hidden'})",
         )
 
         stdscr.addstr(
-            menu_y + 3, 2,
-            "[c]",
-            curses.color_pair(3) | curses.A_BOLD
+            menu_y + 3, 2, "[c]", curses.color_pair(3) | curses.A_BOLD
         )
         stdscr.addstr(
-            menu_y + 3, 6,
-            f" cycle wall color (currently: {color_name})"
+            menu_y + 3, 6, f" cycle wall color (currently: {color_name})"
         )
 
         stdscr.addstr(
-            menu_y + 4, 2,
-            "[q]",
-            curses.color_pair(4) | curses.A_BOLD
+            menu_y + 4, 2, "[q]", curses.color_pair(4) | curses.A_BOLD
         )
         stdscr.addstr(menu_y + 4, 6, " quit")
 
@@ -301,6 +290,7 @@ def run_display(config: MazeConfig) -> None:
     Args:
         config: A validated MazeConfig instance.
     """
+
     def _main(stdscr: curses.window) -> None:
         setup_colors()
         curses.curs_set(0)
@@ -311,32 +301,31 @@ def run_display(config: MazeConfig) -> None:
         generator = MazeGenerator(config)
         grid = generator.generate()
         pattern_cells = generator.get_pattern_cells()
-        path_coords = _build_path_coords(
-            grid, config.entry, config.exit
-        )
+        path_coords = _build_path_coords(grid, config.entry, config.exit)
 
         while True:
             stdscr.clear()
             color_name = WALL_COLORS[color_index]
 
             render_maze(
-                stdscr, grid,
-                config.entry, config.exit,
-                path_coords, show_path, color_name,
-                pattern_cells
+                stdscr,
+                grid,
+                config.entry,
+                config.exit,
+                path_coords,
+                show_path,
+                color_name,
+                pattern_cells,
             )
-            show_menu(
-                stdscr, config.height,
-                color_name, show_path
-            )
+            show_menu(stdscr, config.height, color_name, show_path)
             stdscr.refresh()
 
             key = stdscr.getch()
 
-            if key == ord('q'):
+            if key == ord("q"):
                 break
 
-            elif key == ord('r'):
+            elif key == ord("r"):
                 generator = MazeGenerator(config)
                 grid = generator.generate()
                 pattern_cells = generator.get_pattern_cells()
@@ -344,10 +333,10 @@ def run_display(config: MazeConfig) -> None:
                     grid, config.entry, config.exit
                 )
 
-            elif key == ord('p'):
+            elif key == ord("p"):
                 show_path = not show_path
 
-            elif key == ord('c'):
+            elif key == ord("c"):
                 color_index = (color_index + 1) % len(WALL_COLORS)
 
     curses.wrapper(_main)
