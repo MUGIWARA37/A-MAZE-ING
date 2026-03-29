@@ -43,6 +43,8 @@ class MazeGenerator:
         random.seed(str(self.seed))
         self._place_42()        # place 42 FIRST
         self._carve_dfs()       # DFS avoids 42 cells
+        if not self.perfect:
+            self._make_imperfect()  # delete randome walls
         self._enforce_borders()  # enforce borders last
         return self.grid
 
@@ -176,3 +178,36 @@ class MazeGenerator:
             Set of (x, y) coordinates of pattern cells.
         """
         return self._pattern_cells
+
+
+    def _make_imperfect(self) -> None:
+        """Remove random walls to create loops in the maze.
+    
+        Only called when perfect=False. Creates multiple paths
+        between cells by randomly opening walls.
+        """
+        import math
+        # remove ~15% of walls randomly
+        walls_to_remove = math.floor(self.width * self.height * 0.15)
+    
+        for _ in range(walls_to_remove):
+            # pick a random cell
+            x = random.randint(0, self.width - 2)
+            y = random.randint(0, self.height - 2)
+    
+            # pick a random direction
+            direction, vals = random.choice(list(DIRECTIONS.items()))
+            dx, dy, current_wall, neighbour_wall = vals
+            nx, ny = x + dx, y + dy
+    
+            # skip if neighbour is out of bounds or a pattern cell
+            if not (0 <= nx < self.width and 0 <= ny < self.height):
+                continue
+            if (nx, ny) in self._pattern_cells:
+                continue
+            if (x, y) in self._pattern_cells:
+                continue
+            
+            # remove the wall
+            self.grid[y][x] &= ~current_wall
+            self.grid[ny][nx] &= ~neighbour_wall
