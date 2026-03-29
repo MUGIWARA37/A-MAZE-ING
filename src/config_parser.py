@@ -17,10 +17,12 @@ class MazeConfig(BaseModel):
             x, y = coord
             if not (0 <= x < self.width):
                 raise ValueError(
-                    f"{name} x={x} out of bounds [0, {self.width - 1}]")
+                    f"{name} x={x} out of bounds [0, {self.width - 1}]"
+                )
             if not (0 <= y < self.height):
                 raise ValueError(
-                    f"{name} y={y} out of bounds [0, {self.height - 1}]")
+                    f"{name} y={y} out of bounds [0, {self.height - 1}]"
+                )
         if self.entry == self.exit:
             raise ValueError("entry and exit must be different cells")
         return self
