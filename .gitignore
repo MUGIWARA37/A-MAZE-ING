@@ -1,0 +1,12 @@
+# build artifacts
+build/
+dist/
+*.egg-info/
+
+# compiled Python
+__pycache__/
+*.pyc
+*.pyo
+
+# except the required whl at root
+!mazegen-*.whl
