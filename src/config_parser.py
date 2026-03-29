@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field, model_validator
-from typing import Tuple
+from typing import Tuple, Any
 
 
 class MazeConfig(BaseModel):
@@ -33,7 +33,7 @@ class MazeConfig(BaseModel):
 
 def parse_config(filepath: str) -> MazeConfig:
     try:
-        config_dict: dict[str, any] = {}
+        config_dict: dict[str, Any] = {}
         with open(filepath, "r") as config:
             for line in config:
                 line = line.strip()
