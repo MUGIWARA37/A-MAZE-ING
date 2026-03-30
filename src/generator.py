@@ -40,7 +40,10 @@ class MazeGenerator:
         Returns:
             2D list of ints representing the maze wall bitmasks.
         """
-        random.seed(str(self.seed))
+        if self.seed:
+            random.seed(str(self.seed))
+        else:
+            random.seed()
         self._place_42()        # place 42 FIRST
         self._carve_dfs()       # DFS avoids 42 cells
         if not self.perfect:
