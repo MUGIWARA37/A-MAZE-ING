@@ -342,7 +342,7 @@ def run_display(config: MazeConfig) -> None:
 
             if key == -1:
                 if color_name == "rgb":
-                    time.sleep(0.05)
+                    time.sleep(0.00000001)
                 else:
                     time.sleep(0.1)
                 continue
