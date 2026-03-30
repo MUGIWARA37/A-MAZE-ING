@@ -149,8 +149,8 @@ class MazeGenerator:
 
         PATTERN_42 = [
             "X  X XXXX",
-            "X  X X   ",
-            "XXXX XXX ",
+            "X  X    X",
+            "XXXX XXXX",
             "   X X   ",
             "   X XXXX",
         ]
