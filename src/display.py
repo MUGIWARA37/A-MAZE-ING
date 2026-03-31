@@ -55,6 +55,24 @@ def _get_wall_color(is_rgb: bool, color_name: str) -> int:
     return curses.color_pair(COLOR_MAP[color_name])
 
 
+def _get_pattern_bg_attr() -> int:
+    """Return curses attr for the 42 pattern with RGB background."""
+    if curses.can_change_color():
+        hue = (time.time() * 0.1) % 1.0
+        r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
+
+        curses.init_color(
+            11,
+            int(r * 1000),
+            int(g * 1000),
+            int(b * 1000)
+        )
+        curses.init_pair(8, curses.COLOR_BLACK, 11)
+        return curses.color_pair(8) | curses.A_BOLD
+
+    return curses.color_pair(6) | curses.A_BOLD
+
+
 def _render_cell(
     stdscr: curses.window,
     screen_y: int,
@@ -92,11 +110,13 @@ def _render_cell(
             )
         elif (cx, cy) in pattern_cells:
             stdscr.addstr(
-                screen_y, screen_x, "🟥",
+                screen_y, screen_x, " ",
+                _get_pattern_bg_attr()
             )
         elif show_path and (cx, cy) in path_set:
             stdscr.addstr(
                 screen_y, screen_x, "◽",
+
             )
         else:
             stdscr.addstr(screen_y, screen_x, " ")
