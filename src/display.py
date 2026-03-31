@@ -41,7 +41,7 @@ def _get_wall_color(is_rgb: bool, color_name: str) -> int:
     """
     if is_rgb:
         if curses.can_change_color():
-            hue = (time.time() * 0.1) % 1.0
+            hue = (time.time() * 0.05) % 1.0
             r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
             curses.init_color(
                 10,
