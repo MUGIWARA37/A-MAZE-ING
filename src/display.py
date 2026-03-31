@@ -250,13 +250,13 @@ def show_menu(
             curses.color_pair(5) | curses.A_BOLD,
         )
         stdscr.addstr(
-            menu_y + 1, 2, "[r]",
+            menu_y + 1, 2, "[R]",
             curses.color_pair(2) | curses.A_BOLD
         )
         stdscr.addstr(menu_y + 1, 6, " Regenerate maze")
 
         stdscr.addstr(
-            menu_y + 2, 2, "[p]",
+            menu_y + 2, 2, "[P]",
             curses.color_pair(2) | curses.A_BOLD
         )
         stdscr.addstr(
@@ -266,7 +266,7 @@ def show_menu(
         )
 
         stdscr.addstr(
-            menu_y + 3, 2, "[c]",
+            menu_y + 3, 2, "[C]",
             curses.color_pair(2) | curses.A_BOLD
         )
         stdscr.addstr(
@@ -275,7 +275,7 @@ def show_menu(
         )
 
         stdscr.addstr(
-            menu_y + 4, 2, "[q]",
+            menu_y + 4, 2, "[Q]",
             curses.color_pair(4) | curses.A_BOLD
         )
         stdscr.addstr(menu_y + 4, 6, " Quit the game")
@@ -362,18 +362,18 @@ def run_display(config: MazeConfig) -> None:
                 else:
                     time.sleep(0.1)
                 continue
-            elif key == ord("q"):
+            elif key == ord("q") or key == ord("Q"):
                 break
-            elif key == ord("r"):
+            elif key == ord("r") or key == ord("R"):
                 generator = MazeGenerator(config)
                 grid = generator.generate()
                 pattern_cells = generator.get_pattern_cells()
                 path_coords = _build_path_coords(
                     grid, config.entry, config.exit
                 )
-            elif key == ord("p"):
+            elif key == ord("p") or key == ord("P"):
                 show_path = not show_path
-            elif key == ord("c"):
+            elif key == ord("c") or key == ord("C"):
                 color_index = (color_index + 1) % len(WALL_COLORS)
 
     curses.wrapper(_main)
