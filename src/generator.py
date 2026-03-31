@@ -105,16 +105,16 @@ class MazeGenerator:
         self.grid[ny][nx] &= ~neighbour_wall
 
     def _place_42(self) -> None:
-        """Stamp the '42' pattern onto the maze before DFS carving."""
+        """Stamp the 42 pattern onto the maze before DFS carving.
+
+        Shifts the pattern if it overlaps with entry or exit.
+        """
         pattern_width = 9
         pattern_height = 5
 
         if self.width < pattern_width + 2 or self.height < pattern_height + 2:
             print("Error: maze too small to display the '42' pattern")
             return
-
-        start_x = (self.width - pattern_width) // 2
-        start_y = (self.height - pattern_height) // 2
 
         PATTERN_42 = [
             "X  X XXXX",
@@ -124,19 +124,41 @@ class MazeGenerator:
             "   X XXXX",
         ]
 
-        pattern_cells: set[tuple[int, int]] = set()
-        for row_idx, row in enumerate(PATTERN_42):
-            for col_idx, char in enumerate(row):
-                if char == "X":
-                    px = start_x + col_idx
-                    py = start_y + row_idx
-                    pattern_cells.add((px, py))
+        center_x = (self.width - pattern_width) // 2
+        center_y = (self.height - pattern_height) // 2
 
-        self._pattern_cells = pattern_cells
+        # generate all valid positions sorted by distance from center
+        positions = []
+        for sy in range(1, self.height - pattern_height):
+            for sx in range(1, self.width - pattern_width):
+                dist = abs(sx - center_x) + abs(sy - center_y)
+                positions.append((dist, sx, sy))
+        positions.sort()
 
-        # stamp 0xF on all pattern cells
-        for px, py in pattern_cells:
-            self.grid[py][px] = 0xF
+        for _, start_x, start_y in positions:
+            # build candidate pattern cells
+            candidate_cells: set[tuple[int, int]] = set()
+            for row_idx, row in enumerate(PATTERN_42):
+                for col_idx, char in enumerate(row):
+                    if char == "X":
+                        candidate_cells.add(
+                            (start_x + col_idx, start_y + row_idx)
+                        )
+
+            # skip if pattern overlaps entry or exit
+            if self.entry in candidate_cells or self.exit in candidate_cells:
+                continue
+
+            # valid position found
+            self._pattern_cells = candidate_cells
+            for px, py in candidate_cells:
+                self.grid[py][px] = 0xF
+            return
+
+        # no valid position found
+        print("Warning: could not place '42' pattern without "
+              "overlapping entry/exit")
+        self._pattern_cells = set()
 
     def _enforce_borders(self) -> None:
         """Ensure all border cells have their outer walls closed.
