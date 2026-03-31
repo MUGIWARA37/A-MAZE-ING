@@ -373,7 +373,7 @@ def run_display(config: MazeConfig) -> None:
                 continue
             elif key == ord("q") or key == ord("Q"):
                 play_click_sound("soundsrc/Goodbye Meme Sound Effect.mp3")
-                time.sleep(2.3)
+                time.sleep(4.3)
                 break
             elif key == ord("r") or key == ord("R"):
                 play_click_sound("soundsrc/تي غا بعدي مني هالعار  "
@@ -385,6 +385,7 @@ def run_display(config: MazeConfig) -> None:
                     grid, config.entry, config.exit
                 )
             elif key == ord("p") or key == ord("P"):
+                play_click_sound("soundsrc/Fahhhh - Sound effect (HD).mp3")
                 show_path = not show_path
             elif key == ord("c") or key == ord("C"):
                 play_click_sound("soundsrc/عطسة الشاب العربي الغريبة.mp3")
