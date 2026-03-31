@@ -41,7 +41,7 @@ def _get_wall_color(is_rgb: bool, color_name: str) -> int:
     """
     if is_rgb:
         if curses.can_change_color():
-            hue = (time.time() * 0.05) % 1.0
+            hue = (time.time() * 0.1) % 1.0
             r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
             curses.init_color(
                 10,
@@ -251,23 +251,23 @@ def show_menu(
         )
         stdscr.addstr(
             menu_y + 1, 2, "[r]",
-            curses.color_pair(3) | curses.A_BOLD
+            curses.color_pair(2) | curses.A_BOLD
         )
-        stdscr.addstr(menu_y + 1, 6, " regenerate maze")
+        stdscr.addstr(menu_y + 1, 6, " Regenerate maze")
 
         stdscr.addstr(
             menu_y + 2, 2, "[p]",
-            curses.color_pair(3) | curses.A_BOLD
+            curses.color_pair(2) | curses.A_BOLD
         )
         stdscr.addstr(
             menu_y + 2, 6,
-            " show/hide path  (currently: "
+            " Show/Hide the path  (currently: "
             f"{'shown' if show_path else 'hidden'})",
         )
 
         stdscr.addstr(
             menu_y + 3, 2, "[c]",
-            curses.color_pair(3) | curses.A_BOLD
+            curses.color_pair(2) | curses.A_BOLD
         )
         stdscr.addstr(
             menu_y + 3, 6,
@@ -278,7 +278,7 @@ def show_menu(
             menu_y + 4, 2, "[q]",
             curses.color_pair(4) | curses.A_BOLD
         )
-        stdscr.addstr(menu_y + 4, 6, " quit")
+        stdscr.addstr(menu_y + 4, 6, " Quit the game")
 
     except curses.error:
         pass
