@@ -1,2 +1,2 @@
-__authore1__ = "rhlou"
-__authore2__ = "yaqasbi"
+__creater1__ = "rhlou"
+__creater2__ = "yaqasbi"
