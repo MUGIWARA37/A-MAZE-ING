@@ -28,6 +28,10 @@ class MazeConfig(BaseModel):
         if not self.output_file.endswith(".txt"):
             raise ValueError("The out_put file must "
                              "be a txt file (example.txt) !")
+        if (self.output_file == "config.txt"
+           or self.output_file == "requirements.txt"):
+            raise ValueError(f"{self.output_file} is a programme file please "
+                             "change the output_file name")
         return self
 
 
