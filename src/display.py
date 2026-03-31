@@ -1,6 +1,8 @@
 import curses
 import colorsys
 import time
+from playsound import playsound
+import threading
 from src.config_parser import MazeConfig
 from src.generator import MazeGenerator
 from src.pathfinder import find_shortest_path, DIRECTIONS
@@ -315,6 +317,11 @@ def _build_path_coords(
     return coords
 
 
+def play_click_sound(path: str) -> None:
+    """Play sound in a background thread to avoid blocking the UI."""
+    threading.Thread(target=playsound, args=(path,), daemon=True).start()
+
+
 def run_display(config: MazeConfig) -> None:
     """Main display loop — renders maze and handles user input.
 
@@ -335,6 +342,8 @@ def run_display(config: MazeConfig) -> None:
         path_coords = _build_path_coords(
             grid, config.entry, config.exit
         )
+        play_click_sound("soundsrc/سلام عليكم يا شباب معكم ياسين من قناة"
+                         " ياس بلايز  Moroccan Memes Sound Effect.mp3")
 
         while True:
             color_name = WALL_COLORS[color_index]
@@ -358,13 +367,17 @@ def run_display(config: MazeConfig) -> None:
 
             if key == -1:
                 if color_name == "rgb":
-                    time.sleep(0.00000001)
+                    time.sleep(0.01)
                 else:
                     time.sleep(0.1)
                 continue
             elif key == ord("q") or key == ord("Q"):
+                play_click_sound("soundsrc/Goodbye Meme Sound Effect.mp3")
+                time.sleep(2.3)
                 break
             elif key == ord("r") or key == ord("R"):
+                play_click_sound("soundsrc/تي غا بعدي مني هالعار  "
+                                 "Moroccan Memes Sound Effect.mp3")
                 generator = MazeGenerator(config)
                 grid = generator.generate()
                 pattern_cells = generator.get_pattern_cells()
@@ -374,6 +387,7 @@ def run_display(config: MazeConfig) -> None:
             elif key == ord("p") or key == ord("P"):
                 show_path = not show_path
             elif key == ord("c") or key == ord("C"):
+                play_click_sound("soundsrc/عطسة الشاب العربي الغريبة.mp3")
                 color_index = (color_index + 1) % len(WALL_COLORS)
 
     curses.wrapper(_main)
