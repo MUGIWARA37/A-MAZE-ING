@@ -3,6 +3,17 @@ from typing import Tuple, Any
 
 
 class MazeConfig(BaseModel):
+    """Validated configuration for maze generation.
+
+        Attributes:
+            width: Maze width in cells.
+            height: Maze height in cells.
+            entry: Entry coordinates (x, y).
+            exit: Exit coordinates (x, y).
+            output_file: Output filename for the maze.
+            perfect: Whether to generate a perfect (loop-free) maze.
+            seed: Random seed for reproducibility.
+        """
     width: int = Field(..., gt=1, description="Maze width in cells")
     height: int = Field(..., gt=1, description="Maze height in cells")
     entry: Tuple[int, int] = Field(..., description="Entry coordinates (x, y)")
@@ -13,6 +24,18 @@ class MazeConfig(BaseModel):
 
     @model_validator(mode="after")
     def validate_coordinates(self) -> "MazeConfig":
+        """Validate entry/exit coordinates and output file constraints.
+
+                Returns:
+                    The validated MazeConfig instance.
+
+                Raises:
+                    ValueError: If coordinates are out of bounds, entry equals
+                    exit,
+                        output_file is not a .txt file, or output_file
+                        conflicts with
+                        reserved filenames.
+                """
         for name, coord in [("entry", self.entry), ("exit", self.exit)]:
             x, y = coord
             if not (0 <= x < self.width):
@@ -36,6 +59,19 @@ class MazeConfig(BaseModel):
 
 
 def parse_config(filepath: str) -> MazeConfig:
+    """Parse a key=value config file into a validated MazeConfig.
+
+        Args:
+            filepath: Path to the configuration file.
+
+        Returns:
+            A validated MazeConfig instance.
+
+        Raises:
+            FileNotFoundError: If the file does not exist.
+            KeyError: If a required key is missing in the config.
+            ValueError: If a line is malformed or a value cannot be parsed.
+        """
     try:
         config_dict: dict[str, Any] = {}
         with open(filepath, "r") as config:
@@ -73,5 +109,8 @@ def parse_config(filepath: str) -> MazeConfig:
         raise FileNotFoundError(f"Config file '{filepath}' not found")
     except KeyError as e:
         raise KeyError(f"Missing mandatory key in config: {e}")
+    except ValueError as e:
+        msg = e.errors()[0]["msg"]
+        raise ValueError(f"{msg}")
     except ValueError as e:
         raise ValueError(f"Invalid config value: {e}")
