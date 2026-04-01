@@ -342,8 +342,8 @@ def run_display(config: MazeConfig) -> None:
         path_coords = _build_path_coords(
             grid, config.entry, config.exit
         )
-        play_click_sound("soundsrc/سلام عليكم يا شباب معكم ياسين من قناة"
-                         " ياس بلايز  Moroccan Memes Sound Effect.mp3")
+        play_click_sound("soundsrc/السلام عليكم بعدا هي لولة علال القادوس "
+                         " Sound Effect Troll.mp3")
 
         while True:
             color_name = WALL_COLORS[color_index]
@@ -372,12 +372,13 @@ def run_display(config: MazeConfig) -> None:
                     time.sleep(0.1)
                 continue
             elif key == ord("q") or key == ord("Q"):
-                play_click_sound("soundsrc/Goodbye Meme Sound Effect.mp3")
-                time.sleep(4.3)
+                play_click_sound("soundsrc/ljem tbarkelah 3likom "
+                                 "ma3aydi mansalekom  Sound Effect Troll.mp3")
+                time.sleep(2.1)
                 break
             elif key == ord("r") or key == ord("R"):
-                play_click_sound("soundsrc/تي غا بعدي مني هالعار  "
-                                 "Moroccan Memes Sound Effect.mp3")
+                play_click_sound("soundsrc/Hbet awa Hbet badr hari   "
+                                 "Sound Effect Troll.mp3")
                 generator = MazeGenerator(config)
                 grid = generator.generate()
                 pattern_cells = generator.get_pattern_cells()
