@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, ValidationError
 from typing import Tuple, Any
 
 
@@ -109,7 +109,7 @@ def parse_config(filepath: str) -> MazeConfig:
         raise FileNotFoundError(f"Config file '{filepath}' not found")
     except KeyError as e:
         raise KeyError(f"Missing mandatory key in config: {e}")
-    except ValueError as e:
+    except ValidationError as e:
         msg = e.errors()[0]["msg"]
         raise ValueError(f"{msg}")
     except ValueError as e:
