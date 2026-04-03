@@ -366,7 +366,7 @@ def run_display(config: MazeConfig) -> None:
             key = stdscr.getch()
 
             if key == -1:
-                if color_name == "rgb":
+                if color_name == "HLWASA":
                     time.sleep(0.01)
                 else:
                     time.sleep(0.1)
