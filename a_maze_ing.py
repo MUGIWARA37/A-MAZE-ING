@@ -23,6 +23,9 @@ def main() -> None:
     except FileNotFoundError as e:
         print(f"Error: {e}")
         sys.exit(1)
+    except PermissionError as e:
+        print(f"Error: {e}")
+        sys.exit(1)
     except (KeyError, ValueError) as e:
         print(f"Error: {e}")
         sys.exit(1)

@@ -112,6 +112,9 @@ def parse_config(filepath: str) -> MazeConfig:
 
     except FileNotFoundError:
         raise FileNotFoundError(f"Config file '{filepath}' not found")
+    except PermissionError:
+        raise PermissionError("You don't have the permission to read from "
+                              "this file, try to change it's permissions")
     except KeyError as e:
         raise KeyError(f"Missing mandatory key in config: {e}")
     except ValidationError as e:
