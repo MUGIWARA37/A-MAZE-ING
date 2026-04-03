@@ -1,4 +1,8 @@
-from pydantic import BaseModel, Field, model_validator, ValidationError
+try:
+    from pydantic import BaseModel, Field, model_validator, ValidationError
+except Exception:
+    print("A module is not found run the command (make install)")
+    exit(1)
 from typing import Tuple, Any
 
 

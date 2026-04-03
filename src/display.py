@@ -1,7 +1,11 @@
-import curses
-import colorsys
-import time
-from playsound import playsound
+try:
+    import curses
+    import colorsys
+    import time
+    from playsound import playsound
+except Exception:
+    print("A module is not found run the command (make install)")
+    exit(1)
 import threading
 from src.config_parser import MazeConfig
 from src.generator import MazeGenerator
