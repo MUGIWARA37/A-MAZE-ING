@@ -75,6 +75,7 @@ def parse_config(filepath: str) -> MazeConfig:
     try:
         config_dict: dict[str, Any] = {}
         with open(filepath, "r") as config:
+            key_lst = []
             for line in config:
                 line = line.strip()
                 if not line or line.startswith("#"):
@@ -85,7 +86,11 @@ def parse_config(filepath: str) -> MazeConfig:
                         "follow the format 'KEY=VALUE'"
                     )
                 key, value = line.split("=", 1)
-                config_dict[key.strip().lower()] = value.strip()
+                key, value = key.strip(), value.strip()
+                if key in key_lst:
+                    raise ValueError(f"{key} is duplicated !!")
+                key_lst += [key]
+                config_dict[key] = value
 
         config_dict["width"] = int(config_dict["width"])
         config_dict["height"] = int(config_dict["height"])
