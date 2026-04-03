@@ -2,7 +2,6 @@ PYTHON = python3
 MAIN = a_maze_ing.py
 CONFIG = config.txt
 SRC = src
-TESTS = tests
 
 .PHONY: install run debug clean lint lint-strict build
 
@@ -41,9 +40,6 @@ lint:
 lint-strict:
 	flake8 .
 	mypy . --strict
-
-test:
-	pytest $(TESTS) -v
 
 build:
 	pip install build

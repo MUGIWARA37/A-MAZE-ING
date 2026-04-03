@@ -86,7 +86,7 @@ def parse_config(filepath: str) -> MazeConfig:
                         "follow the format 'KEY=VALUE'"
                     )
                 key, value = line.split("=", 1)
-                key, value = key.strip(), value.strip()
+                key, value = key.strip().lower(), value.strip()
                 if key in key_lst:
                     raise ValueError(f"{key} is duplicated !!")
                 key_lst += [key]
