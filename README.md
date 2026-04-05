@@ -23,7 +23,7 @@ and supports multiple wall colors including an RGB rainbow effect.
 ### Installation
 ```bash
 # clone the repository
-git clone https://github.com/yourusername/a-maze-ing.git
+git clone git@vogsphere-v2.1337.ma:vogsphere/intra-uuid-d6897151-638e-4af5-a89e-249fc9680bf1-7244267-rhlou a-maze-ing
 cd a-maze-ing
 
 # install dependencies

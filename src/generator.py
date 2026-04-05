@@ -113,6 +113,8 @@ class MazeGenerator:
         pattern_height = 5
 
         if self.width < pattern_width + 2 or self.height < pattern_height + 2:
+            print("The maze dimention are too smalle to carve the 42 patern"
+                  "The maze geneted without it !!")
             return
 
         PATTERN_42 = [
