@@ -75,7 +75,7 @@ class MazeGenerator:
             ValueError: If entry and exit are the same cell.
         """
         if width <= 0 or height <= 0:
-            raise ValueError("width and height must be greater than 0")
+            raise ValueError("width and height must be greater than 2")
 
         self.width: int = width
         self.height: int = height
