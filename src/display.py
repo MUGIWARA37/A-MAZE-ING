@@ -66,7 +66,6 @@ def _get_pattern_bg_attr() -> int:
     if curses.can_change_color():
         hue = (time.time() * 0.3) % 1.0
         r, g, b = colorsys.hsv_to_rgb(hue, 1.0, 1.0)
-
         curses.init_color(
             11,
             int(r * 1000),
@@ -75,7 +74,6 @@ def _get_pattern_bg_attr() -> int:
         )
         curses.init_pair(8, curses.COLOR_BLACK, 11)
         return curses.color_pair(8) | curses.A_BOLD
-
     return curses.color_pair(6) | curses.A_BOLD
 
 
@@ -107,23 +105,19 @@ def _render_cell(
     """
     try:
         if (cx, cy) == entry:
-            stdscr.addstr(
-                screen_y, screen_x, "🎮",
-            )
+            stdscr.addstr(screen_y, screen_x, "S",
+                          curses.color_pair(4) | curses.A_BOLD)
         elif (cx, cy) == exit:
-            stdscr.addstr(
-                screen_y, screen_x, "👾",
-            )
+            stdscr.addstr(screen_y, screen_x, "E",
+                          curses.color_pair(4) | curses.A_BOLD)
         elif (cx, cy) in pattern_cells:
             stdscr.addstr(
                 screen_y, screen_x, " ",
                 _get_pattern_bg_attr()
             )
         elif show_path and (cx, cy) in path_set:
-            stdscr.addstr(
-                screen_y, screen_x, "◽",
-
-            )
+            stdscr.addstr(screen_y, screen_x, "*",
+                          curses.color_pair(5) | curses.A_BOLD)
         else:
             stdscr.addstr(screen_y, screen_x, " ")
     except curses.error:
@@ -172,6 +166,7 @@ def render_maze(
                 curses.color_pair(4) | curses.A_BOLD
             )
             stdscr.refresh()
+            time.sleep(0.5)
         except curses.error:
             pass
         return
@@ -189,7 +184,7 @@ def render_maze(
             try:
                 if row % 2 == 0 and col % 2 == 0:
                     wall_attr = _get_wall_color(is_rgb, color_name)
-                    stdscr.addstr(screen_y, screen_x, "✢", wall_attr)
+                    stdscr.addstr(screen_y, screen_x, "+", wall_attr)
 
                 elif row % 2 == 0 and col % 2 == 1:
                     if row == 0 or row == 2 * height:
@@ -198,7 +193,7 @@ def render_maze(
                         has_wall = bool(grid[cy - 1][cx] & 0x4)
                     if has_wall:
                         wall_attr = _get_wall_color(is_rgb, color_name)
-                        stdscr.addstr(screen_y, screen_x, "— ", wall_attr)
+                        stdscr.addstr(screen_y, screen_x, "--", wall_attr)
                     else:
                         stdscr.addstr(screen_y, screen_x, "  ")
 
@@ -323,7 +318,132 @@ def _build_path_coords(
 
 def play_click_sound(path: str) -> None:
     """Play sound in a background thread to avoid blocking the UI."""
-    threading.Thread(target=playsound, args=(path,), daemon=True).start()
+    threading.Thread(
+        target=playsound, args=(path,), daemon=True
+    ).start()
+
+
+def show_intro(stdscr: curses.window) -> None:
+    """Display intro screen with title and author.
+
+    Args:
+        stdscr: The curses window to draw on.
+    """
+    stdscr.clear()
+    max_y, max_x = stdscr.getmaxyx()
+
+    title = [
+        " █████╗      ███╗   ███╗ █████╗ ███████╗███████╗"
+        "    ██╗███╗   ██╗ ██████╗ ",
+        "██╔══██╗     ████╗ ████║██╔══██╗╚══███╔╝██╔════╝"
+        "    ██║████╗  ██║██╔════╝ ",
+        "███████║     ██╔████╔██║███████║  ███╔╝ █████╗  "
+        "    ██║██╔██╗ ██║██║  ███╗",
+        "██╔══██║     ██║╚██╔╝██║██╔══██║ ███╔╝  ██╔══╝  "
+        "    ██║██║╚██╗██║██║   ██║",
+        "██║  ██║     ██║ ╚═╝ ██║██║  ██║███████╗███████╗"
+        "    ██║██║ ╚████║╚██████╔╝",
+        "╚═╝  ╚═╝     ╚═╝     ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝"
+        "    ╚═╝╚═╝  ╚═══╝ ╚═════╝ ",
+    ]
+
+    subtitle = "created by MUGIWARA37"
+    press_enter = "[ press ENTER to start ]"
+
+    title_y = max_y // 2 - 6
+    subtitle_y = title_y + len(title) + 2
+    enter_y = subtitle_y + 2
+
+    # draw title line by line with animation
+    for i, line in enumerate(title):
+        title_x = max(0, (max_x - len(line)) // 2)
+        try:
+            stdscr.addstr(
+                title_y + i, title_x, line,
+                curses.color_pair(5) | curses.A_BOLD
+            )
+            stdscr.refresh()
+            time.sleep(0.05)
+        except curses.error:
+            pass
+
+    # draw subtitle
+    try:
+        sub_x = max(0, (max_x - len(subtitle)) // 2)
+        stdscr.addstr(
+            subtitle_y, sub_x, subtitle,
+            curses.color_pair(3) | curses.A_BOLD
+        )
+        stdscr.refresh()
+        time.sleep(0.3)
+    except curses.error:
+        pass
+
+    # blinking press enter
+    blink = True
+    stdscr.nodelay(True)
+    while True:
+        try:
+            enter_x = max(0, (max_x - len(press_enter)) // 2)
+            if blink:
+                stdscr.addstr(
+                    enter_y, enter_x, press_enter,
+                    curses.color_pair(2) | curses.A_BOLD
+                )
+            else:
+                stdscr.addstr(
+                    enter_y, enter_x, " " * len(press_enter)
+                )
+            stdscr.refresh()
+            blink = not blink
+            time.sleep(0.5)
+        except curses.error:
+            pass
+
+        key = stdscr.getch()
+        if key in (ord("\n"), 10, 13):
+            break
+
+
+def _animate_loading(
+    stdscr: curses.window,
+    grid: list[list[int]],
+    entry: tuple[int, int],
+    exit: tuple[int, int],
+    path_coords: list[tuple[int, int]],
+    pattern_cells: set[tuple[int, int]],
+) -> None:
+    """Animate the maze appearing gradually row by row.
+
+    Args:
+        stdscr: The curses window to draw on.
+        grid: 2D list of wall bitmasks.
+        entry: Entry coordinates (x, y).
+        exit: Exit coordinates (x, y).
+        path_coords: List of path coordinates.
+        pattern_cells: Set of pattern cell coordinates.
+    """
+    height = len(grid)
+    width = len(grid[0])
+
+    for reveal_row in range(height + 1):
+        stdscr.erase()
+        partial_grid = (
+            grid[:reveal_row]
+            + [[0xF] * width for _ in range(height - reveal_row)]
+        )
+        render_maze(
+            stdscr,
+            partial_grid,
+            entry,
+            exit,
+            path_coords,
+            False,
+            "cyan",
+            pattern_cells,
+        )
+        stdscr.refresh()
+        time.sleep(0.05)
 
 
 def run_display(config: MazeConfig) -> None:
@@ -335,6 +455,11 @@ def run_display(config: MazeConfig) -> None:
     def _main(stdscr: curses.window) -> None:
         setup_colors()
         curses.curs_set(0)
+
+        # show intro screen
+        show_intro(stdscr)
+
+        # enable nodelay after intro
         stdscr.nodelay(True)
 
         color_index: int = 0
@@ -346,8 +471,18 @@ def run_display(config: MazeConfig) -> None:
         path_coords = _build_path_coords(
             grid, config.entry, config.exit
         )
-        play_click_sound("soundsrc/السلام عليكم بعدا هي لولة علال القادوس "
-                         " Sound Effect Troll.mp3")
+
+        play_click_sound(
+            "soundsrc/السلام عليكم بعدا هي لولة علال القادوس "
+            " Sound Effect Troll.mp3"
+        )
+
+        # animate maze loading
+        _animate_loading(
+            stdscr, grid,
+            config.entry, config.exit,
+            path_coords, pattern_cells
+        )
 
         while True:
             color_name = WALL_COLORS[color_index]
@@ -376,24 +511,37 @@ def run_display(config: MazeConfig) -> None:
                     time.sleep(0.1)
                 continue
             elif key == ord("q") or key == ord("Q"):
-                play_click_sound("soundsrc/ljem tbarkelah 3likom "
-                                 "ma3aydi mansalekom  Sound Effect Troll.mp3")
+                play_click_sound(
+                    "soundsrc/ljem tbarkelah 3likom "
+                    "ma3aydi mansalekom  Sound Effect Troll.mp3"
+                )
                 time.sleep(2.1)
                 break
             elif key == ord("r") or key == ord("R"):
-                play_click_sound("soundsrc/Hbet awa Hbet badr hari   "
-                                 "Sound Effect Troll.mp3")
+                play_click_sound(
+                    "soundsrc/Hbet awa Hbet badr hari   "
+                    "Sound Effect Troll.mp3"
+                )
                 generator = MazeGenerator(config)
                 grid = generator.generate()
                 pattern_cells = generator.get_pattern_cells()
                 path_coords = _build_path_coords(
                     grid, config.entry, config.exit
                 )
+                _animate_loading(
+                    stdscr, grid,
+                    config.entry, config.exit,
+                    path_coords, pattern_cells
+                )
             elif key == ord("p") or key == ord("P"):
-                play_click_sound("soundsrc/Fahhhh - Sound effect (HD).mp3")
+                play_click_sound(
+                    "soundsrc/Fahhhh - Sound effect (HD).mp3"
+                )
                 show_path = not show_path
             elif key == ord("c") or key == ord("C"):
-                play_click_sound("soundsrc/عطسة الشاب العربي الغريبة.mp3")
+                play_click_sound(
+                    "soundsrc/عطسة الشاب العربي الغريبة.mp3"
+                )
                 color_index = (color_index + 1) % len(WALL_COLORS)
 
     curses.wrapper(_main)

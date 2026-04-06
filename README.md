@@ -236,7 +236,7 @@ make build
 
 - VS Code — code editor
 - Git — version control
-- Claude AI — used for guidance on algorithm design,
+- AI — used for guidance on algorithm design,
   debugging, and code structure.
 
 ## Resources
